@@ -1,3 +1,5 @@
+#### Please give a star to repository if you liked this project.
+
 # RedHat-Automation-Application
 It's a desktop application for RedHat OS
 
