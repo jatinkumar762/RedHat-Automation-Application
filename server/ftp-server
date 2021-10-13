@@ -1,0 +1,60 @@
+#!/bin/bash
+dialog --title "FTP Server" --menu "Enter you choice :" 15 30 2 1. "Make Server" 2. "Remove Server" 2>choice
+ch=`cat choice`
+rm -r choice
+	    if [ "$ch" == "1." ]
+	    then
+		rpm -q vsftpd
+			if [ $? -eq 0 ]
+			then
+			   dialog --ascii-lines --infobox "FTP Server is already Installed....\nNothing to do....." 10 30
+                           sleep 5
+                        else
+                           for i in 20 40 60 80 100
+                           do
+                              echo $i | dialog --gauge "Confiuring......\nPlease Wait....." 10 70
+                              sleep 3
+                           done
+                           yum install vsftpd -y &>/dev/null
+                           dialog --yesno "Do you want to allow local users to login ?" 10 40
+                           if [ $? -eq 1 ]
+                           then
+                                sed -i '15s/YES/NO/' /etc/vsftpd/vsftpd.conf &>/dev/null
+                           fi
+                           dialog --title "FTP Server" --inputbox "Enter the no of Users you want to Deny :" 10 40 2>/tmp/num
+                           n=`cat /tmp/num`
+                           for (( i=1;i<=n;i++ ))
+                           do
+                              dialog --title "User Name" --inputbox "Enter the Name of the User :" 10 40 2>/tmp/name
+                              jk=`cat /tmp/name`
+                              echo "$jk" >>/etc/vsftpd/user_list
+                           done
+			   service vsftpd restart &>/dev/null
+                           sleep 2
+                           dialog --ascii-lines --infobox "FTP Server is Successfully Installed" 10 40 
+                           sleep 5
+                         fi
+            elif [ "$ch" == "2." ]
+            then
+                rpm -q vsftpd
+                        if [ $? -eq 0 ]
+                        then
+                           for i in 20 40 60 80 100
+                           do
+                              echo $i | dialog --gauge "Removing......\nPlease Wait....." 10 70
+                              sleep 3
+                           done
+                           rpm -e vsftpd &>/dev/null
+                           dialog --ascii-lines --infobox "FTP Server is Successfully Uninstalled" 10 30
+                           sleep 5
+                        else
+			   dialog --ascii-lines --infobox "FTP Server is already uninstalled...\nNothing to do....." 10 40
+                           sleep 5
+                        fi
+           fi                      
+				
+
+
+
+
+

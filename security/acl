@@ -1,0 +1,60 @@
+#!/bin/bash
+dialog  --menu "Enter your Choice :" 15 50 5 1. "Set ACL for a Particular User" 2. "Set ACL for a Particular Group" 3. "Remove ACL for a Particular User" 4. "Remove ACL for a Particular Group" 5. "Check ACL for a File or Dir" 2>/tmp/choice
+    ch=`cat /tmp/choice`
+    rm -r /tmp/choice
+              if [ "$ch" == "1." ]
+              then
+		  dialog --inputbox "Enter the user name :" 10 40 2>/tmp/name
+                  n=`cat /tmp/name`
+                  dialog --inputbox "Enter the Permission[rwx]for this user:" 10 40 2>/tmp/perm
+                  p=`cat /tmp/perm`
+                  dialog --inputbox "Enter the File or Dir Name :" 10 40 2>/tmp/name
+                  r=`cat /tmp/name`
+                  setfacl -m u:$n:$p $r
+                  dialog --infobox "Successfully done...." 10 40
+                  sleep 5
+                  rm -r /tmp/name /tmp/perm 
+              elif [ "$ch" == "2." ]
+              then
+                  dialog --inputbox "Enter the user name :" 10 40 2>/tmp/name
+                  n=`cat /tmp/name`
+                  dialog --inputbox "Enter the Permission[rwx]for this group:" 2>/tmp/perm
+                  p=`cat /tmp/perm`
+                  dialog --inputbox "Enter the File or Dir Name :" 2>/tmp/name
+                  r=`cat /tmp/name`
+                  setfacl -m u:$n:$p $r
+                  dialog --infobox "Successfully done...." 10 40
+                  sleep 5
+                  rm -r /tmp/name /tmp/perm 
+              elif [ "$ch" == "3." ]
+              then
+                  dialog --inputbox "Enter the group name :" 10 40 2>/tmp/name
+                  n=`cat /tmp/name`
+                  dialog --inputbox "Enter the File or Dir Name :" 10 40 2>/tmp/name
+                  r=`cat /tmp/name`
+                  setfacl -x u:$n $r
+                  dialog --infobox "Successfully done...." 10 40
+                  sleep 5
+                  rm -r /tmp/name /tmp/perm 
+              elif [ "$ch" == "4." ]
+              then
+                  dialog --inputbox "Enter the group name :" 10 40 2>/tmp/name
+                  n=`cat /tmp/name`
+                  dialog --inputbox "Enter the File or Dir Name :" 2>/tmp/name
+                  r=`cat /tmp/name`
+                  setfacl -x u:$n $r
+                  dialog --infobox "Successfully done...." 10 40
+                  sleep 5
+                  rm -r /tmp/name /tmp/perm 
+              elif [ "$ch" == "5." ]
+              then
+                    dialog --inputbox "Enter the File or Dir Name :" 10 40 2>/tmp/name
+                    mm=`cat /tmp/name`                
+                    getfacl $mm >/tmp/result
+                    dialog --textbox /tmp/result 15 40      
+                    rm -r /tmp/name /tmp/result
+              fi
+
+
+
+     

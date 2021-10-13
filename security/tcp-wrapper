@@ -1,0 +1,122 @@
+#!/bin/bash
+
+dialog --title "Access Rules" --menu "Enter Choice:" 10 30 2 1. "Allow Connections" 2. "Deny Connections" 2>/tmp/choice
+ch=`cat /tmp/choice`
+rm -r /tmp/choice
+   if [ "$ch" == "1." ]
+   then
+        dialog --menu "Enter your choice :" 15 55 4 1. "Allow all clients on Particular Service" 2. "Allow all service for Particular Client" 3. "Particular Service for Particular Clients" 4. "Allow all Services For all Clients" 2>/tmp/choice
+	j1=`cat /tmp/choice`
+	rm -r /tmp/choice
+        	if [ "$j1" == "1." ]
+                then
+        	dialog --inputbox "Enter the number of Services you give:" 10 30 2>/tmp/num
+        	n=`cat /tmp/num`
+        	rm -r /tmp/num
+                  	for (( i=1;i<=n;i++ ))
+                  	do
+                    	 	dialog --inputbox "Enter the daemon name of Network Service:" 10 30 2>/tmp/name
+                     	 	name=`cat /tmp/name`
+                     	 	echo "$name : ALL ">>/etc/hosts.allow
+                        done
+                elif [ "$j1" == "2." ]
+                then
+                dialog --inputbox "Enter the number of Clients :" 10 30 2>/tmp/num
+                n=`cat /tmp/num`
+                rm -r /tmp/num
+                        for (( i=1;i<=n;i++ ))
+                  	do
+                    	 	dialog --inputbox "Give the client IP addr or host_name:" 10 30 2>/tmp/name
+                     	 	name=`cat /tmp/name`
+                     	 	echo "ALL : $name ">>/etc/hosts.allow
+                        done
+                elif [ "$j1" == "3." ]
+                then
+                      dialog --inputbox "Enter the number of Services you give:" 10 30 2>/tmp/num
+                      n=`cat /tmp/num`
+                      rm -r /tmp/num
+                            for (( i=1 ; i<=n ;i++ ))
+                            do
+				dialog --inputbox "Enter the daemon name of Network Service:" 10 30 2>/tmp/name
+                                nam=`cat /tmp/name`
+                                dialog --inputbox "Enter the number of clients for this Service:" 10 30 2>/tmp/num
+                                nn=`cat /tmp/num`
+                                rm -r /tmp/name /tmp/num 
+                                for (( j=1;j<=nn;j++ ))
+                                do
+                                    dialog --inputbox "Give the client IP addr or host_name:" 10 30 2>/tmp/host
+                                    j2=`cat /tmp/host`
+                                    echo "$j2" >>/tmp/list
+                                done  
+                                paste -s /tmp/list >/tmp/jatin
+                                result=`cat /tmp/jatin`
+                                rm -r /tmp/host /tmp/list /tmp/jatin
+                                echo "$nam   :   $result" >>/etc/hosts.allow
+                            done                     
+                elif [ "$j1" == "4." ]
+                then
+                      echo "ALL : ALL" >>/etc/hosts.allow
+                      dialog --infobox "Successfully Done....." 10 30
+                      sleep 5
+                fi
+     elif [ "$ch" == "2." ]
+     then
+            dialog --menu "Enter your choice :" 15 60 4 1. "Deny all clients on Particular Service" 2. "Deny all service for Particular Client" 3. "Particular service for Particular Clients" 4. "All Services for all Clients" 2>/tmp/choice
+	j1=`cat /tmp/choice`
+	rm -r /tmp/choice
+        	if [ "$j1" == "1." ]
+                then
+        	dialog --inputbox "Enter the number of Services you give:" 10 30 2>/tmp/num
+        	n=`cat /tmp/num`
+        	rm -r /tmp/num
+                  	for (( i=1;i<=n;i++ ))
+                  	do
+                    	 	dialog --inputbox "Enter the daemon name of Network Service:" 10 30 2>/tmp/name
+                     	 	name=`cat /tmp/name`
+                     	 	echo "$name : ALL ">>/etc/hosts.deny
+                        done
+                elif [ "$j1" == "2." ]
+                then
+                dialog --inputbox "Enter the number of Clients :" 10 30 2>/tmp/num
+                n=`cat /tmp/num`
+                rm -r /tmp/num
+                        for (( i=1;i<=n;i++ ))
+                  	do
+                    	 	dialog --inputbox "Give the client IP addr or host_name:" 10 30 2>/tmp/name
+                     	 	name=`cat /tmp/name`
+                     	 	echo "ALL : $name ">>/etc/hosts.deny
+                        done
+                elif [ "$j1" == "3." ]
+                then
+                      dialog --inputbox "Enter the number of Services you give:" 10 30 2>/tmp/num
+                      n=`cat /tmp/num`
+                      rm -r /tmp/num
+                            for (( i=1 ; i<=n ;i++ ))
+                            do
+				dialog --inputbox "Enter the daemon name of Network Service:" 10 30 2>/tmp/name
+                                nam=`cat /tmp/name`
+                                dialog --inputbox "Enter the number of clients for this Service:" 10 30 2>/tmp/num
+                                nn=`cat /tmp/num`
+                                rm -r /tmp/name /tmp/num 
+                                for (( j=1;j<=nn;j++ ))
+                                do
+                                    dialog --inputbox "Give the client IP addr or host_name:" 10 30 2>/tmp/host
+                                    j2=`cat /tmp/host`
+                                    echo "$j2" >>/tmp/list
+                                done  
+                                paste -s /tmp/list >/tmp/jatin
+                                result=`cat /tmp/jatin`
+                                rm -r /tmp/host /tmp/list /tmp/jatin
+                                echo "$nam   :   $result" >>/etc/hosts.deny
+                            done  
+                elif [ "$j1" == "4." ]
+                then
+                      echo "ALL : ALL">>/etc/hosts.deny
+                      dialog --infobox "Successfully Done....." 10 30 
+                      sleep 5                  
+                fi
+        fi
+
+
+
+

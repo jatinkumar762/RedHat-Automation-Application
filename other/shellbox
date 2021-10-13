@@ -1,0 +1,40 @@
+#!/bin/bash
+dialog --menu "Enter your choice :" 10 30 2 1. "Start Service" 2. "Stop Service" 2>/tmp/result
+res=`cat /tmp/result`
+rm -rf /tmp/result
+        if [ "$res" == "1." ]
+        then
+              rpm -q shellinabox
+              if [ $? -eq 1 ]
+              then
+                   yum install shellinabox &>/dev/null
+                   if [ $? -eq 1 ]
+                   then
+                       dialog --infobox "Package shellinabox not available......\nPlease make available....." 10 40
+                       sleep 5
+                   else
+                       dialog --infobox "Starting.......\nPlease Wait......" 10 30
+                       sleep 3
+                       service shellinaboxd restart &>/dev/null
+                       dialog --infobox "***You are ready to use....\n***Service successfully start...." 10 40
+                       sleep 5
+                    fi
+               else
+                       dialog --infobox "Starting.......\nPlease Wait......" 10 30
+                       sleep 3
+                       service shellinaboxd restart &>/dev/null
+                       dialog --infobox "***You are ready to use....\n***Service successfully start...." 10 40
+                       sleep 5
+               fi
+         elif [ "$res" == "2." ]
+         then
+                  dialog --infobox "Stopping.......\nPlease Wait......" 10 30
+                  sleep 3
+                  service shellinaboxd stop &>/dev/null
+                  dialog --infobox "Successfully stop the service....." 10 30
+                  sleep 5
+          fi
+                       
+setenforce 0
+iptables -F           
+              

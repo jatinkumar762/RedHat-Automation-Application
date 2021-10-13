@@ -1,0 +1,71 @@
+#!/bin/bash
+dialog --no-collapse --keep-tite --title "Permissions" --menu "Enter your choice :" 20 70 5 1. "Change permissions of particular file or Dir" 2. "Change owner of file or dir" 3. "Change group of file or dir" 4. "Stickybit Permission" 5. "Set Group ID" 2>/tmp/name
+res=`cat /tmp/name`
+rm -r /tmp/name
+            if [ "$res" == "1." ]
+            then
+                 dialog --infobox "Description of Permissions:\n\nr(4) --> read permission\nw(2) --> write permission\nx(1) --> execute permission\n\nUse Digit Method for method of permission" 10 40 
+                 sleep 5
+                 dialog --inputbox "Enter the File or Dir Name :" 10 40 2>/tmp/name
+                 n1=`cat /tmp/name`
+                       dialog  --inputbox "Enter permission for owner :" 10 20 2>/tmp/owner 
+                       dialog  --inputbox "Enter permission for group :" 10 20 2>/tmp/group 
+                       dialog  --inputbox "Enter permission for others :" 10 20 2>/tmp/other
+                 u=`cat /tmp/owner` 
+                 g=`cat /tmp/group`  
+                 o=`cat /tmp/other`
+                 chmod $u$g$o $n1
+                 dialog --infobox "Successfully done....." 10 40
+                 sleep 5
+                 rm -r /tmp/owner /tmp/group /tmp/other /tmp/name
+             elif [ "$res" == "2." ]
+             then
+                   dialog --inputbox "Enter the File or Dir Name :" 10 40 2>/tmp/name
+                   n1=`cat /tmp/name`
+                   dialog --inputbox "Enter the new owner name :" 10 40 2>/tmp/name1
+                   n2=`cat /tmp/name1`
+                   chown $n2 $n1
+                   dialog --infobox "Successfully done....." 10 40
+                   sleep 5
+                   rm -r /tmp/name /tmp/name1
+             elif [ "$res" == "3." ]
+             then
+                   dialog --inputbox "Enter the File or Dir Name :" 10 40 2>/tmp/name
+                   n1=`cat /tmp/name`
+                   dialog --inputbox "Enter the new group name :" 10 40 2>/tmp/name1
+                   n2=`cat /tmp/name1`
+                   chown :$n2 $n1
+                   dialog --infobox "Successfully done....." 10 40
+                   sleep 5
+                   rm -r /tmp/name /tmp/name1
+             elif [ "$res" == "4." ]
+             then
+                    dialog --menu "Enter choice :" 10 40 2 1. "ADD" 2. "Remove" 2>/tmp/choice
+                    c=`cat /tmp/choice`
+                    dialog --inputbox "Enter the Dir name :" 2>/tmp/stick
+                    s=`cat /tmp/stick`           
+                               if [ "$c" == 1 ]
+                               then
+               			     chmod +t $s
+                               else
+                                     chmod -t $s
+                               fi
+                     rm -r /tmp/stick /tmp/choice
+                     dialog --infobox "Successfully done....." 10 40
+                     sleep 5
+              elif [ "$res" == "5." ]
+              then
+                     dialog --menu "Enter choice :" 10 40 2 1. "ADD" 2. "Remove" 2>/tmp/choice
+                     c=`cat /tmp/choice`
+                     dialog --inputbox "Enter the already existing Dir name :" 10 30 2>/tmp/name
+                     n=`cat /tmp/name`
+                     	if [ "$c" == "1." ]
+                        then                     
+                               chmod g+s $n
+                        else
+                               chmod g-s $n
+			fi
+                     dialog --no-shadow --infobox "Successfully done....." 10 40 
+                     sleep 5
+              fi                     
+

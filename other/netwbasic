@@ -1,0 +1,73 @@
+#!/bin/bash
+dialog --title "Networking" --menu "Enter your choice :" 20 60 8 1. "Find Hostname & IP Addr" 2. "Map Hostname to IP Addr" 3. "Map IP Addr to Hostname" 4. "Activate or Deactivate Network Card" 5. "Check link(lan wire) is connected or not" 6. "Information about active internet connection " 7. "Currently logged-in Users information" 8. "Check Network Card Status" 2>/tmp/choice
+ch=`cat /tmp/choice`
+rm -rf /tmp/choice
+           if [ "$ch" == "1." ]
+           then
+               echo "Hostname :`hostname`" >/tmp/inf
+               echo "IP Addr  :`hostname -I`">>/tmp/inf
+               dialog --ascii-lines --textbox /tmp/inf 10 30
+           rm -rf /tmp/inf
+           elif [ "$ch" == "2." ]
+           then
+                dialog --inputbox "Enter Hostname\ne.g.-www.google.com :" 10 30 2>/tmp/inf
+                name=`cat /tmp/inf`
+                host $name  >/tmp/inf
+                if [ $? -eq 0 ]
+                then
+                     dialog --title "IP Addr" --textbox /tmp/inf 15 70
+                else
+                     dialog --infobox "Check Connectivity....or.....Wrong information" 10 40
+                     sleep 5
+                fi
+                rm -rf /tmp/inf
+           elif [ "$ch" == "3." ]
+           then
+                 dialog --inputbox "Enter the IP Addr or Hostname:" 10 30 2>/tmp/inf
+                 name=`cat /tmp/inf`
+                 nslookup $name >/tmp/res
+                 dialog --textbox /tmp/res 10 50
+                 rm -rf /tmp/inf
+           elif [ "$ch" == "4." ]
+           then
+                 dialog --menu "Enter Choice :" 10 30 2 1. "Activate" 2. "Deactivate" 2>/tmp/name
+                 n=`cat /tmp/name`
+                       if [ "$n" == "1." ]
+                       then
+                             dialog --input "Enter the Network card name :" 10 40 2>/tmp/name1
+                             n1=`cat /tmp/name1`
+                             ifup $n1
+                       elif [ "$n" == "2." ]
+                       then                
+                             dialog --input "Enter the Network card name :" 10 40 2>/tmp/name1
+                             n1=`cat /tmp/name1`
+                             ifdown $n1
+                       fi
+                  rm -rf /tmp/name /tmp/name1
+           elif [ "$ch" == "5." ]
+           then
+                 mii-tool &>/dev/null
+                        if [ $? -eq 0 ]
+                        then
+                             dialog --infobox "Link is connected" 10 30
+                             sleep 5
+                        else
+                              dialog --infobox "Link is not connected" 10 30
+                             sleep 5
+                        fi 
+           elif [ "$ch" == "6." ]
+           then
+                  echo "`netstat -nlpt`" >/tmp/hello
+                  dialog --textbox /tmp/hello 15 65     
+           elif [ "$ch" == "7." ]
+           then
+                 finger >/tmp/inf
+                 dialog --title "Users" --textbox /tmp/inf 15 70
+                 rm -rf /tmp/inf
+           elif [ "$ch" == "8." ]
+           then
+                  dialog --inputbox "Enter the network card name :" 10 30 2>/tmp/net
+                  nn=`cat /tmp/net`
+                  echo "`ethtool $nn`" >/tmp/show
+                  dialog --textbox /tmp/show 15 70
+            fi

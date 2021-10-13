@@ -1,0 +1,56 @@
+#!/bin/bash
+rpm -q telnet-server
+if [ $? -eq 0 ]
+then
+		dialog --ascii-lines --title "telnet-server" --infobox "telnet-server is already installed....\n Nothing to do..." 10 50
+		sleep 7
+else
+                           
+			for i in 20 40 60 80 100
+			do
+			echo "$i" | dialog --gauge "Installing....\nPlease Wait....." 10 70
+			sleep 2
+			done
+			yum install telnet-server -y &>/dev/null
+			sed -i 's/yes/no/' /etc/xinetd.d/telnet
+			dialog --title "Security" --menu "Enter Choice :" 20 40 4 1. "Allow Particular One Client" 2. "Allow a range of Clients" 3. "Deny Partcular One Client" 4. "Deny a range of clients" 2>/tmp/choice
+                        ch=`cat /tmp/choice`
+                        sed -i '13s/}/ /' /etc/xinetd.d/telnet
+                               if [ "$ch" == "1." ]
+                               then
+                                    dialog --inputbox "Enter the IP Addr:" 10 30 2>/tmp/name
+                                    nn=`cat /tmp/name`
+                                    echo "only_from=$nn" >>/etc/xinetd.d/telnet
+                                    rm -rf /tmp/name
+                               elif [ "$ch" == "2." ]
+                               then
+                                     dialog --inputbox "Enter the IP Addr with required range:" 10 30 2>/tmp/name
+                                     nn=`cat /tmp/name`
+                                     echo "only_from=$nn" >>/etc/xinetd.d/telnet
+                                     rm -rf /tmp/name
+                               elif [ "$ch" == "3." ]
+                               then
+                                    dialog --inputbox "Enter the IP Addr:" 10 30 2>/tmp/name
+                                    nn=`cat /tmp/name`
+                                    echo "no_access = $nn" >>/etc/xinetd.d/telnet
+                                    rm -rf /tmp/name
+                               elif [ "$ch" == "4." ]
+                               then
+                                     dialog --inputbox "Enter the IP Addr with required range:" 10 30 2>/tmp/name
+                                     nn=`cat /tmp/name`
+                                     echo "no_access = $nn" >>/etc/xinetd.d/telnet
+                                     rm -rf /tmp/name
+                                fi
+                        service xinetd restart >/dev/null
+			dialog --ascii-lines --infobox "****Your telnet-server is ready to use****" 10 50
+			sleep 3
+echo "}" >>/etc/xinetd.d/telnet
+fi
+
+
+
+
+##nu=newuser
+##useradd $nu
+##echo "123" | passwd $nu --stdin >/dev/null
+##echo "username is $nu and passwd is 123 " | nc -l 45

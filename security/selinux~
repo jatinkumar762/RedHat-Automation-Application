@@ -1,0 +1,35 @@
+#!/bin/bash
+
+dialog --title "SELinux" --menu "Enter choice:" 15 45 5 1. "Information" 2. "Enable disabled mode" 3. "Enable Permissive mode" 4. "Enable Enforcing mode" 5. "Current Status" 2>/tmp/choice
+ch=`cat /tmp/choice`
+rm -r /tmp/choice
+       if [ "$ch" == "1." ]
+       then
+            dialog --textbox /root/Desktop/Project/security/selinux-info 15 70
+       elif [ "$ch" == "2." ]
+       then
+             sed -i '7s/enforcing/disabled/' /etc/selinux/config
+             dialog --yesno "For make changes complete need to reboot the system\nDo you want to reboot the system now ?" 10 30 2>/tmp/enter
+            e=`cat /tmp/enter`
+            rm -r /tmp/enter
+                      if [ $e -eq 0 ]
+                      then
+                            reboot
+                      else
+                             dialog --infobox "When you reboot system SeLinux mode changes Disable mode" 10 30
+                             sleep 5
+                      fi
+       elif [ "$ch" == "3." ]
+       then
+             setenforce permissive
+       elif [ "$ch" == "4." ]
+       then
+             setenforce enforcing
+       elif [ "$ch" == "5." ]
+       then
+             sestatus >/tmp/status
+             dialog --textbox /tmp/status 10 60
+             rm -r /tmp/status
+       fi
+       
+

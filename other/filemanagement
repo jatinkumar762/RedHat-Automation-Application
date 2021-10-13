@@ -1,0 +1,98 @@
+#!/bin/bash
+dialog --title "Handling Files" --menu "Enter your Choice :" 20 50 6 1. "Knowing the file types" 2. "View the Content of File" 3. "Copying a file or Dir" 4. "Deleting File or Dir " 5. "Move file or Dir to another location" 6. "Rename a File or Dir" 2>/tmp/choice
+ch=`cat /tmp/choice`
+rm -rf /tmp/choice 
+           if [ "$ch" == "1." ]
+           then
+                dialog --no-shadow --infobox "Use * symbol to represent all files or Dir's at a location" 10 30
+                sleep 3
+                dialog --inputbox "Enter the File name with Absolut Path :" 10 30 2>/tmp/name
+                n=`cat /tmp/name`
+                file $n >/tmp/result
+                dialog --title "File Type" --textbox /tmp/result 15 70
+                rm -rf /tmp/result /tmp/name 
+           elif [ "$ch" == "2." ]
+           then
+                dialog --inputbox "Enter the File name with Absolut Path :" 10 30 2>/tmp/name
+                n=`cat /tmp/name`
+                cat $n >/tmp/result
+                dialog --title "Displaying File" --textbox /tmp/result 20 70
+                rm -rf /tmp/result /tmp/name 
+           elif [ "$ch" == "3." ]
+           then
+                dialog --no-shadow --infobox "Use * symbol to represent all files or Dir's at a location" 10 30
+                sleep 3
+                dialog --inputbox "Enter the File or Dir name with absolute path :" 10 30 2>/tmp/name
+                n=`cat /tmp/name`
+                dialog --inputbox "Enter the Destination location with absolute path :" 10 30 2>/tmp/name1
+                n1=`cat /tmp/name1`       
+                cp $n $n1
+                 if [ $? -eq 0 ]
+                  then 
+                  dialog --infobox "Suceesfully done" 10 30 
+                  sleep 5
+                  else
+                  dialog --infobox "Operation failed....\nProvide correct Information" 10 35
+                  sleep 5
+                  fi
+                rm -rf /tmp/name /tmp/name1 
+           elif [ "$ch" == "4." ]
+           then
+                 dialog --no-shadow --infobox "Use * symbol to represent all files or Dir's in a Dir" 10 30
+                 sleep 3
+                 dialog --inputbox "Enter the File or Dir name with absolute path :" 10 30 2>/tmp/name
+                 n=`cat /tmp/name`
+                 rm -rf $n
+                 rm -rf /tmp/name
+                  if [ $? -eq 0 ]
+                  then 
+                  dialog --infobox "Suceesfully done" 10 30 
+                  sleep 5
+                  else
+                  dialog --infobox "Operation failed....\nProvide correct Information" 10 35
+                  sleep 5
+                  fi
+                  rm -rf /tmp/name
+           elif [ "$ch" == "5." ]
+           then
+                  dialog --no-shadow --infobox "Use * symbol to represent all files or Dir's in a Dir" 10 30
+                  sleep 3
+                  dialog --inputbox "Enter the File or Dir name with absolute path :" 10 30 2>/tmp/name
+                  n=`cat /tmp/name`
+                  dialog --inputbox "Enter the Destination location with absolute path :" 10 30 2>/tmp/name1               
+                  n1=`cat /tmp/name1`
+                  mv $n $n1
+                  if [ $? -eq 0 ]
+                  then 
+                  dialog --infobox "Suceesfully done" 10 30 
+                  sleep 5
+                  else
+                  dialog --infobox "Operation failed....\nProvide correct Information" 10 35
+                  sleep 5
+                  fi
+                  rm -rf /tmp/name /tmp/name1
+           elif [ "$ch" == "6." ]
+           then
+                  dialog --inputbox "Enter the file or Dir Name with absolute path :" 10 30 2>/tmp/name
+                  n=`cat /tmp/name`
+                  dialog --inputbox "Enter the new name:" 10 30 2>/tmp/name1
+                  n1=`cat /tmp/name1`
+                  mv $n $n1
+                  if [ $? -eq 0 ]
+                  then 
+                  dialog --infobox "Suceesfully done" 10 30 
+                  sleep 5
+                  else
+                  dialog --infobox "Operation failed....\nProvide correct Information" 10 35
+                  sleep 5
+                  fi
+                  rm -rf /tmp/name /tmp/name1
+           fi
+
+
+
+
+  
+
+
+

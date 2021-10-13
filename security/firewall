@@ -1,0 +1,53 @@
+#!/bin/bash
+dialog --title "Firewall" --menu "Enter choice :" 15 60 7 1. "Blocking a single IP address" 2. "Allowing all traffic from an IP Address" 3. "Blocking a port from all addresses" 4. "Allowing a single port from a single IP" 5. "Viewing the current rules" 6. "Clearing the current rules" 7. "Restart the Firewall" 2>/tmp/choice
+ch=`cat /tmp/choice`
+rm -r /tmp/choice
+          if [ "$ch" == "1." ]
+          then
+                dialog --inputbox "Enter the IP Address :" 10 40 2>/tmp/input
+                a=`cat /tmp/input`
+                iptables -I INPUT -s "$a" -j DROP
+                dialog --ascii-lines --infobox "Successfully done" 10 30
+                sleep 5
+          elif [ "$ch" == "2." ]
+          then
+                dialog --inputbox "Enter the IP Address :" 10 40 2>/tmp/input
+                a=`cat /tmp/input`
+                iptables -A INPUT -s $a -j ACCEPT
+                dialog --ascii-lines --infobox "Successfully done" 10 30
+                sleep 5
+                rm -r /tmp/input
+          elif [ "$ch" == "3." ]
+          then
+                 dialog --inputbox "Enter the Protocol name for port :" 10 40 2>/tmp/input
+                 j2=`cat /tmp/input`
+                 dialog --inputbox "Enetr the Port number :" 10 40 2>/tmp/input1
+                 j1=`cat /tmp/input1`
+                 iptables -A INPUT -p $j2 --dport $j1 -j DROP
+                 rm -r /tmp/input /tmp/input1
+          elif [ "$ch" == "4." ]
+          then
+                  dialog --inputbox "Enter the Protocol name for port :" 10 40 2>/tmp/input
+                  j1=`cat /tmp/input`
+                  dialog --inputbox "Enter the IP Address :" 10 40 2>/tmp/input1
+                  j2=`cat /tmp/input1`
+                  dialog --inputbox "Enter the Port Number :" 10 40 2>/tmp/input2
+                  j3=`cat /tmp/input2`
+                  iptables -A INPUT -p $j1 -s $j2 --dport $j3 -j ACCEPT
+                  rm -r /tmp/input /tmp/input1 /tmp/input2         
+          elif [ "$ch" == "5." ]
+          then
+                 iptables -L >/tmp/jatin
+                 dialog --textbox /tmp/jatin 15 70
+                 rm -r /tmp/jatin
+          elif [ "$ch" == "6." ]
+          then
+                 iptables -F
+                 dialog --ascii-lines --infobox "Successfully done" 10 30
+                 sleep 5
+          elif [ "$ch" == "7." ]
+          then
+                 /etc/init.d/iptables restart &>/dev/null
+                 dialog --ascii-lines --infobox "Successfully done" 10 30
+                 sleep 5
+          fi 

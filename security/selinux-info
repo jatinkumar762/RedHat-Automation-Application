@@ -1,0 +1,21 @@
+Security-Enhanced Linux (SELinux) is a Linux kernel 
+security module that provides the mechanism for supporting 
+access control security policies.
+
+SELinux has three available modes:
+
+1)Disabled   --> SELinux is turned off and does not restrict
+                 any action.
+2)Permissive --> In permissive mode any SELinux security 
+                 violation would be logged only, it means
+                 in permissive mode security violation
+                 would not be stopped.
+3)Enforcing  --> In enforcing mode any SELinux security
+                 violation would be logged and service would 
+                 stop. Any action that violate SELinux rule 
+                 would be denied.
+
+
+
+
+

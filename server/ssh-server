@@ -1,0 +1,121 @@
+#!/bin/bash
+dialog --title "SSH Server" --menu "Enter you choice :" 15 30 2 1. "SSH Server" 2. "SSH-Client-Server" 2>choice
+ch=`cat choice`
+rm -r choice
+	if [ "$ch" == "1." ]
+        then
+         	dialog --title "SSH Server" --menu "Enter your choice :" 15 30 2 1. "Make" 2. "Remove" 2>choice
+                ch=`cat choice`
+                rm -r choice
+                	if [ "$ch" == "1." ]
+                        then
+  			      rpm -q openssh-server >/dev/null
+                                	if [ $? -eq 0 ]
+					then
+						dialog --ascii-lines --infobox "SSH Server is already Insatlled...\nNothing to do......." 15 30
+                                                sleep 5
+                                        else
+						for i in 10 20 50 70 90 100
+						do
+						   echo $i | dialog --gauge "Configuring......\nPlease Wait......" 10 70
+						   sleep 5
+						done
+                                                yum install openssh-server -y >/dev/null 2>/dev/null
+                                                dialog --inputbox "Enter the Number of User Account you want to Deny:" 10 30 2>/tmp/number
+                                                num=`cat /tmp/number`
+                                                for (( i=1;i<=num;i++ ))
+                                                do
+                                                    dialog --title "Deny User" --inputbox "Enter The Name of User Account :" 10 50 2>/tmp/name
+                                                    name=`cat /tmp/name`
+                                                    echo "$name" >>/tmp/file
+                                                done
+                                                 paste -s /tmp/file >/tmp/new
+                                                 jat=`cat /tmp/new`    
+                                                 echo "denyusers  $jat" >>/etc/ssh/sshd_config
+                                                rm -rf /tmp/name /tmp/number /tmp/new /tmp/file
+
+                                                dialog --inputbox "Enter the Number of User Account you want to Allow:" 10 30 2>/tmp/number
+                                                num=`cat /tmp/number`
+                                                for (( i=1;i<=num;i++ ))
+                                                do
+                                                    dialog --title "Allow User" --inputbox "Enter The Name of User Account :" 10 50 2>/tmp/name
+                                                    name=`cat /tmp/name`
+                                                    echo "$name" >>/tmp/file
+                                                done
+                                                 paste -s /tmp/file >/tmp/new
+                                                 jat=`cat /tmp/new`    
+                                                 echo "allowusers  $jat" >>/etc/ssh/sshd_config
+
+                                               	dialog --ascii-lines --infobox "SSH Server is Successfully Configure" 15 30
+                                                sleep 5  
+						service sshd restart &>/dev/null
+                                                rm -rf /tmp/name /tmp/number /tmp/new /tmp/file
+					fi
+			elif [ "$ch" == "2." ]
+                        then
+			     rpm -q openssh-server &>/dev/null
+			  		  if [ $? -eq 0 ]
+					  then
+						for i in 10 20 50 70 90 100
+						do
+						   echo $i | dialog --gauge "Removing......\nPlease Wait......" 10 70
+						   sleep 5
+						done
+                                                rpm -e openssh-server &>/dev/null
+                                                dialog --ascii-lines --infobox "SSH Server is Successfully Remove" 15 30
+                                                sleep 5 
+                                           else
+                                                dialog --ascii-lines --infobox "SSH Server is already not installed" 15 30
+                                                sleep 5  
+                                           fi
+                        fi  
+	elif [ "$ch" == "2." ]
+        then
+  		dialog --title "SSH Server" --menu "Enter your choice :" 15 30 2 1. "Make" 2. "Remove" 2>choice
+                ch=`cat choice`
+                rm -r choice
+			if [ "$ch" == "1." ]
+                        then
+  			      rpm -q openssh-clients >/dev/null	
+                                        if [ $? -eq 0 ]
+					then
+						dialog --ascii-lines --infobox "Client SSH Server is already Insatlled...\nNothing to do......." 15 30
+                                                sleep 5
+                                        else
+						for i in 10 20 50 70 90 100
+						do
+						   echo $i | dialog --gauge "Configuring......\nPlease Wait......" 10 70
+						   sleep 5
+						done
+                                                yum install openssh-clients -y &>/dev/null
+                                                dialog --ascii-lines --infobox "Client SSH Server is Successfully Configure" 15 30
+                                                sleep 5  
+						service sshd restart
+					fi       				
+                          elif [ "$ch" == "2." ]
+                          then
+                               rpm -q openssh-clients >/dev/null
+                                      if [ $? -eq 0 ]
+				      then
+					  for i in 10 20 50 70 90 100
+					  do	
+					    echo $i | dialog --gauge "Removing....\nPlease Wait....." 10 70
+					    sleep 5
+					  done
+			              yum remove openssh-clients -y &>/dev/null
+                                      dialog --ascii-lines --infobox "Client SSH Server is Successfully Remove" 15 30
+                                      sleep 5
+				      else
+                                          dialog --ascii-lines --infobox "Client SSH Server is already remove" 15 30
+				          sleep 5
+				      fi
+                          fi
+         fi
+
+setenforce 0
+iptables -F
+
+
+                                                
+ 
+

@@ -1,0 +1,90 @@
+#!/bin/bash
+dialog --title "Samba-Server" --menu "\n\n  # Enter your choice #" 15 30 2 1 "Remove Server" 2 "Make Server" 2>tmp
+ch=`cat tmp`
+
+case $ch in
+1)dialog --title "Remove" --menu " " 10 30 2 1. "Samba-Server" 2. "Samba-Client-Server" 2>tmp
+	ch=`cat tmp`
+        if [ $ch == "1." ]
+        then
+        rpm -q samba
+        	if [ $? -eq 1 ]
+                then
+                dialog --ascii-lines --infobox "Samba-Server is already uninstall" 10 30
+                sleep 5
+                else
+                rpm -e samba &>/dev/null
+                for i in 20 40 60 80 100
+                do
+                echo $i | dialog --gauge "wait....." 10 70
+                sleep 1
+                done
+                dialog --ascii-lines --infobox "Samba-Server is sucessfully uninstall" 10 30
+                sleep 2
+                fi
+        elif [ $ch == "2." ]
+        then 
+        rpm -q samba-client
+        	if [ $? -eq 1 ]
+                then
+                dialog --ascii-lines --infobox "Samba-Client-Server is already uninstall" 10 30
+                sleep 5
+                else
+                rpm -e samba-client &>/dev/null
+                for i in 20 40 60 80 100
+                do
+                echo $i | dialog --gauge "wait....." 10 70
+                sleep 1
+                done
+                dialog --ascii-lines --infobox "Samba-Client-Server is sucessfully uninstall" 10 30
+                sleep 2
+                fi     
+       fi 
+;;
+2) dialog --title "Make" --menu " " 10 30 2 1. "Samba-Server" 2. "Samba-Client-Server" 2>tmp
+	ch=`cat tmp`
+        if [ $ch == "1." ]
+        then
+        rpm -q samba
+        	if [ $? -eq 0 ]
+                then
+                dialog --ascii-lines --infobox "Samba-Server is already Install" 10 30
+                sleep 5
+                else
+                yum install samba -y &>/dev/null
+                for i in 20 40 60 80 100
+                do
+                echo $i | dialog --gauge "Installing.....\nPlease wait....." 10 70
+                sleep 1
+                done
+                mkdir /sambashare >/dev/null
+                echo "[sambashare]" >>/etc/samba/smb.conf
+                echo "path = \sambashare" >>/etc/samba/smb.conf
+                echo "public = yes" >>/etc/samba/smb.conf
+                echo "writable = yes" >>/etc/samba/smb.conf
+                dialog --ascii-lines --infobox "Samba-Server is sucessfully Install\nNote:- Share folder name is sambashare\nShare foldr Path-->/sambashare" 10 30
+                sleep 5
+                fi
+        elif [ $ch == "2." ]
+        then 
+        rpm -q samba-client &>/dev/null
+        	if [ $? -eq 0 ]
+                then
+                dialog --ascii-lines --infobox "Samba-Client-Server is already Install" 10 30
+                sleep 5
+                else
+                yum install samba-client -y &>/dev/null
+                for i in 20 40 60 80 100
+                do
+                echo $i | dialog --gauge "Installing....\nPlease wait....." 10 70
+                sleep 1
+                done
+                dialog --ascii-lines --infobox "Samba-Client-Server is sucessfully Install" 10 30
+                sleep 2
+                fi     
+       fi 
+;;
+esac 
+
+setenforce 0
+iptables -F

@@ -1,0 +1,5 @@
+dialog --inputbox "Enter the Port no at which you service start:" 10 40  2>/tmp/no
+num=`cat /tmp/no`
+clear
+nc -l $num
+

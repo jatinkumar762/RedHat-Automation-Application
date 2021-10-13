@@ -1,0 +1,109 @@
+#!/bin/bash
+dialog --title "NIS Server" --menu "Enter Choice:" 10 40 2 1. "NIS Server" 2. "NIS Client Server" 2>num
+n=`cat num`
+rm -rf num
+	if [ "$n" == "1." ]
+        then
+                   dialog --menu "Enter your Choice:" 10 40 2 1. "Make Server" 2. "Remove Server" 2>/tmp/choice
+                   ch=`cat /tmp/choice`
+                   if [ "$ch" == "1." ]
+                   then
+                                rpm -q ypserv
+                   		if [ $? -eq 0 ]
+                   		then
+					dialog --ascii-lines --infobox "NIS Server is already Installed....\nNothing to do....." 10 40
+                        		sleep 5
+                   		else
+                        		for i in 10 30 50 70 100
+                        		do
+                          		echo $i | dialog --gauge "Configuring....\nPlease Wait...." 10 70
+                          		sleep 3
+                       			done
+                        		yum install ypserv -y &>/dev/null
+                        		dialog --inputbox "Please Enter the Domain Name: " 10 40 2>/tmp/file
+                        		j1=`cat /tmp/file`
+                        		ypdomainname $j1
+                        		dialog --inputbox "Enter the no of user's you want to Create :" 10 40 2> /tmp/file1
+                        		j1=`cat /tmp/file1`
+                         		for(( i=1;i<=j1;i++ ))
+                         		do
+                           		dialog --inputbox "Enter the Name of User:" 10 40 2> /tmp/file3
+                             		jj=`cat /tmp/file3`
+                             		useradd $jj 
+                         		done
+                         		cd /var/yp
+                         		make &>/dev/null
+                        		service ypserv restart
+                                        dialog --ascii-lines --infobox "Successfully Install The NIS Server" 10 40
+                                        sleep 4
+                   		fi
+                   elif [ "$ch" == "2." ]
+                   then
+                   	     rpm -q ypserv
+                             if [ $? -eq 0 ]
+                             then
+                                       for i in 10 30 50 60 80 100
+                                       do
+                                       echo $i | dialog --gauge "Please Wait...." 10 70
+ 				       sleep 2
+				       done
+                                       rpm -e ypserv &>/dev/null
+                                       dialog --infobox "Successfully Uninstall the NIS Server" 10 40
+                              else
+                                       dialog --infobox "NIS Server is already Unisatlled.....\nNothing to do...."
+                                       sleep 5  
+                              fi
+                   fi
+         elif [ "$n" == "2." ]
+         then
+              dialog --title "NIS Client Server" --menu "Enter your Choice:" 10 40 2 1. "Make Server" 2. "Remove Server" 2>/tmp/choice
+              ch=`cat /tmp/choice`
+	                     if [ "$ch" == "1." ]
+			     then
+				rpm -q ypbind &>/dev/null
+                                    if [ $? -eq 0 ]
+				    then
+					dialog --ascii-lines --infobox "NIS Client Server is already installed.....\nNothing to do...." 10 45
+					sleep 5
+				    else
+                                        for i in 10 30 50 60 80 100
+                                        do
+                                          echo $i | dialog --gauge "Please Wait...." 10 70
+ 				          sleep 2
+				        done
+					yum install ypbind -y &>/dev/null
+					authconfig-tui
+                                        dialog --inputbox "Enter the no of User you want to use of NIS Server" 10 40 2>/tmp/name
+                                        n=`cat /tmp/name`
+                                        for (( i=1;i<=n;i++ ))
+                                        do
+                                             dialog --inputbox "Enter the name of User :" 10 40 2>/tmp/file1
+                                             name=`cat /tmp/file1`
+                                             mkdir /home/$name
+                                             cp  -f /etc/skel/.* /home/$name &>/dev/null
+                                        done
+                                        dialog --ascii-lines --infobox "Successfully Make the NIS Client Server" 10 40
+                                        sleep 5
+				    fi
+			     elif [ "$ch" == "2." ]
+			     then
+				 rpm -q ypbind &>/dev/null
+				      if [ $? -eq 0 ]
+                                      then
+                                          for i in 10 35 60 70 90 100
+					  do
+					     echo $i | dialog --gauge "Please Wait....." 10 70
+                                             sleep 2	
+					  done
+                                          yum remove ypbind -y &>/dev/null
+					  dialog --infobox "Successfully uninstall the NIS Client Server" 10 40
+					  sleep 5
+				      else
+                                           dialog --infobox "NIS Client Server is alreday uninstalled....\nNothing to do..." 10 40
+                                           sleep 5
+                                      fi                                    
+			     fi
+	fi 
+iptables -F
+setenforce 0
+	

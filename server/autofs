@@ -1,0 +1,61 @@
+#!/bin/bash
+dialog --title "Autofs Server" --menu "Enter Choice :" 10 30 2 1. "Make Server" 2. "Remove Server" 2>/tmp/choice
+ch=`cat /tmp/choice`
+rm -r /tmp/choice
+           if [ "$ch" == "1." ]
+           then
+                 rpm -q autofs
+                 if [ $? -eq 0 ]
+                 then
+                      dialog --infobox "Autofs Server is already installed....\nNothing to do....." 10 30 
+                      sleep 5
+                 else
+                      for i in 10 30 50 70 90 100
+                      do
+                          echo $i |dialog --gauge "Configuring......\nPlease Wait...." 10 70
+                          sleep 5   
+                      done
+                      yum install autofs -y &>/dev/null
+                      dialog --inputbox "Enter the mountpoint" 10 30 2>/tmp/moun
+                      m=`cat /tmp/moun`
+                      dialog --inputbox "Enter the NFS Server file system location with IP ADDR" 10 30 2>/tmp/nfs
+                      n=`cat /tmp/nfs`
+                      echo "$m /etc/auto.misc" >>/etc/auto.master
+                      echo "*  $n/&" >>/etc/auto.misc
+                      service autofs stop &>/dev/null
+                      service autofs restart &>/dev/null
+                      dialog --infobox "Autofs Server is successfully installed" 10 30 
+                      sleep 5
+                  fi
+            elif [ "$ch" == "2." ]
+            then
+                  rpm -q autofs
+                  if [ $? -eq 0 ]
+                  then
+ 	                     for i in 10 30 50 70 90 100
+ 	                     do
+ 	                         echo $i |dialog --gauge "Please Wait...." 10 70
+ 	                         sleep 5   
+         	             done
+                             yum remove autofs -y &>/dev/null
+                             dialog --infobox "Autofs Server is successfully uninstalled" 10 30 
+                             sleep 5
+                   else
+                             dialog --infobox "Autofs Server is already uninstaled....\nNothing to do....." 10 30
+                             sleep 5
+                   fi 
+            fi                      
+          
+
+
+
+ 
+                        
+			
+
+
+
+
+
+
+

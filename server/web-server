@@ -1,0 +1,86 @@
+#!/bin/bash
+dialog --title "WEB Server" --menu "Enter your choice: " 10 40 2 1. "Make WEB Server" 2. "Remove WEB Server" 2> choice
+ch=`cat choice`
+rm -r choice
+      if [ "$ch" == "1." ]
+      then
+           rpm -q httpd 
+                     if [ $? -eq 0 ]
+		     then
+			 dialog --ascii-lines --infobox "You have already installed WEB Server.....\nNothing to do...." 10 40
+                         sleep 5
+                     else
+                         for i in 10 30 50 60 80 100
+                         do
+                            echo $i | dialog --gauge "Configuring......\nPlease wait....." 10 70
+                            sleep 2
+                         done
+                   
+                         
+                         yum install httpd -y &>/dev/null
+                         dialog --title "WEB Server" --menu "Enter your choice :" 10 40 2 1. "NameBased Virtual Hosting" 2. "IP Based Virtual Hosting" 2>choice
+                         jj=`cat choice`
+                         rm -r choice
+				if [ "$jj" == "1." ]
+				then
+				    dialog --inputbox "Enter the number of web-site you want to create:" 10 40 2>/tmp/web
+                                    w=`cat /tmp/web`
+                                    rm -r /tmp/web
+                                    dialog --inputbox "Enter the host IP address :" 10 40 2>/tmp/ip
+                                    p=`cat /tmp/ip`
+                                    rm -r /tmp/ip
+                                       for (( i=1;i<=w;i++ ))
+                                       do
+                                           dialog --inputbox "Enter the Name you want to give :" 10 40 2>/tmp/name
+                                           n=`cat /tmp/name`
+                                           rm -r /tmp/name
+                                                mkdir /var/www/$n/
+                                           echo "<virtualhost www.$n.com:80>" >>/etc/httpd/conf/httpd.conf
+                                           echo "documentroot /var/www/$n/" >>/etc/httpd/conf/httpd.conf
+                                           echo "servername `hostname`" >>/etc/httpd/conf/httpd.conf
+                                           echo "</virtualhost>" >>/etc/httpd/conf/httpd.conf
+                                           echo "$p   www.$n.com" >>/etc/hosts
+                                       done                  
+                                elif [ "$jj" == "2." ]
+                                then
+                                       dialog --inputbox "Enter the Name you want to give your site :" 10 40 2>/tmp/name
+                                       n=`cat /tmp/name`
+                                       rm -r /tmp/name
+                                       dialog --inputbox "Enter the numbers of IP you want for your site:" 10 40 2>/tmp/num
+                                       n1=`cat /tmp/num` 
+                                       rm -r /tmp/num
+                                            for (( i=1;i<=n1;i++ ))
+                                            do
+                                                 dialog --inputbox "Enter the IP addr:" 10 40 2>/tmp/p1
+                                                 p=`cat /tmp/p1`
+                                                 echo "<virtualhost  $p:80>" >>/etc/httpd/conf/httpd.conf
+                                                 echo "documentroot /var/www/html" >>/etc/httpd/conf/httpd.conf
+                                                 echo "</virtualhost>" >>/etc/httpd/conf/httpd.conf
+                                                 echo "$p   www.$n.com" >>/etc/hosts
+                                           done
+                                fi 
+                         service httpd restart &>/dev/null
+                         dialog --ascii-lines --infobox "WEB Server is Successfully Installed" 10 40
+                         sleep 5
+                      fi
+      else
+           rpm -q httpd
+                     if [ $? -eq 0 ]
+                     then
+                         for i in 10 30 50 60 80 100
+                         do
+                            echo $i | dialog --gauge "Configuring......\nPlease wait....." 10 70
+                            sleep 2
+                         done
+                         yum remove httpd -y &>/dev/null
+                         dialog --ascii-lines --infobox "WEB Server is successfully uninstalled" 10 40
+                         sleep 5
+                     else
+			  dialog --ascii-lines --infobox "WEB Server is already uninstalled....\nNothing to do....." 10 50
+                          sleep 5
+                     fi
+      fi
+				
+iptables -F
+setenforce 0
+                          
